@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Automation Engineer — Roadmap</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2330;
+      --border: #30363d;
+      --accent: #58a6ff;
+      --accent2: #bc8cff;
+      --accent3: #3fb950;
+      --accent4: #f78166;
+      --accent5: #ffa657;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --done: #3fb950;
+      --in-progress: #ffa657;
+      --todo: #58a6ff;
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .header-left h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-left p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+
+    .badge {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .badge span { color: var(--accent); font-weight: 600; }
+
+    /* ── Stats bar ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .stat-card.done::before   { background: var(--done); }
+    .stat-card.active::before { background: var(--in-progress); }
+    .stat-card.planned::before{ background: var(--todo); }
+    .stat-card.total::before  { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .stat-card.done .value    { color: var(--done); }
+    .stat-card.active .value  { color: var(--in-progress); }
+    .stat-card.planned .value { color: var(--todo); }
+    .stat-card.total .value   { color: var(--accent2); }
+
+    .stat-card .label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Overall progress ── */
+    .progress-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+    }
+
+    .progress-header h2 { font-size: 1rem; font-weight: 600; }
+    .progress-pct { font-size: 0.9rem; color: var(--accent); font-weight: 700; }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      width: 42%;
+      transition: width 0.8s ease;
+    }
+
+    /* ── Phase grid ── */
+    .phases {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .phase-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .phase-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .phase-icon.blue   { background: rgba(88,166,255,.15); }
+    .phase-icon.purple { background: rgba(188,140,255,.15); }
+    .phase-icon.green  { background: rgba(63,185,80,.15); }
+    .phase-icon.orange { background: rgba(255,166,87,.15); }
+    .phase-icon.red    { background: rgba(247,129,102,.15); }
+
+    .phase-meta { flex: 1; }
+    .phase-meta h3 { font-size: 0.95rem; font-weight: 600; }
+    .phase-meta p  { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+
+    .phase-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-done       { background: rgba(63,185,80,.15);    color: var(--done); }
+    .tag-active     { background: rgba(255,166,87,.15);   color: var(--in-progress); }
+    .tag-planned    { background: rgba(88,166,255,.15);   color: var(--todo); }
+
+    .task-list { padding: 0.6rem 1.4rem 1.2rem; }
+
+    .task-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .task-item:last-child { border-bottom: none; }
+
+    .task-check {
+      width: 18px; height: 18px;
+      border-radius: 4px;
+      border: 1.5px solid var(--border);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 0.7rem;
+    }
+
+    .task-check.checked {
+      background: var(--done);
+      border-color: var(--done);
+      color: #0d1117;
+    }
+
+    .task-check.half {
+      background: rgba(255,166,87,.2);
+      border-color: var(--in-progress);
+      color: var(--in-progress);
+    }
+
+    .task-text { flex: 1; }
+    .task-text .name { font-size: 0.875rem; line-height: 1.4; }
+    .task-text .sub  { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+
+    .task-pill {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .pill-done    { background: rgba(63,185,80,.15);  color: var(--done); }
+    .pill-active  { background: rgba(255,166,87,.15); color: var(--in-progress); }
+    .pill-planned { background: rgba(88,166,255,.1);  color: var(--todo); }
+
+    /* ── Timeline strip ── */
+    .timeline-section {
+      margin-top: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+    }
+
+    .timeline-section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .timeline {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .tl-item {
+      flex: 1;
+      min-width: 120px;
+      position: relative;
+      padding: 0 0.5rem;
+    }
+
+    .tl-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 9px; right: 0;
+      width: 100%; height: 2px;
+      background: var(--border);
+      z-index: 0;
+      left: 50%;
+    }
+
+    .tl-dot {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      margin: 0 auto 0.6rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .tl-dot.done    { background: var(--done);        border-color: var(--done); }
+    .tl-dot.active  { background: var(--in-progress); border-color: var(--in-progress); box-shadow: 0 0 8px var(--in-progress); }
+    .tl-dot.planned { background: var(--surface2);    border-color: var(--border); }
+
+    .tl-label {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .tl-label strong { display: block; color: var(--text); font-size: 0.78rem; }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    footer a { color: var(--accent); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div class="header-left">
+    <h1>AI Automation Engineer Roadmap</h1>
+    <p>Personal learning & project progression tracker · 2025 – 2026</p>
+  </div>
+  <div class="badge">Last updated: <span>March 2026</span></div>
+</header>
+
+<!-- ── Stats ── -->
+<div class="stats">
+  <div class="stat-card total">
+    <div class="value">24</div>
+    <div class="label">Total Tasks</div>
+  </div>
+  <div class="stat-card done">
+    <div class="value">10</div>
+    <div class="label">Completed</div>
+  </div>
+  <div class="stat-card active">
+    <div class="value">5</div>
+    <div class="label">In Progress</div>
+  </div>
+  <div class="stat-card planned">
+    <div class="value">9</div>
+    <div class="label">Planned</div>
+  </div>
+</div>
+
+<!-- ── Overall Progress ── -->
+<div class="progress-section">
+  <div class="progress-header">
+    <h2>Overall Progress</h2>
+    <span class="progress-pct">42%</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill"></div>
+  </div>
+</div>
+
+<!-- ── Phases ── -->
+<div class="phases">
+
+  <!-- Phase 1 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon blue">🧠</div>
+      <div class="phase-meta">
+        <h3>Phase 1 · Foundations</h3>
+        <p>Python, Git, Linux & core ML concepts</p>
+      </div>
+      <span class="phase-tag tag-done">Done</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Python fundamentals</div><div class="sub">Variables, OOP, async/await</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Git & version control</div><div class="sub">Branching, PRs, CI basics</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Linux & shell scripting</div><div class="sub">Bash, cron, environment setup</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">ML/DL core concepts</div><div class="sub">Neural nets, transformers, embeddings</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon purple">🤖</div>
+      <div class="phase-meta">
+        <h3>Phase 2 · LLM & Prompt Engineering</h3>
+        <p>APIs, prompt design, RAG pipelines</p>
+      </div>
+      <span class="phase-tag tag-done">Done</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">OpenAI & Claude API integration</div><div class="sub">Chat completions, function calling</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Advanced prompt engineering</div><div class="sub">CoT, few-shot, system prompts</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">RAG pipeline architecture</div><div class="sub">Embeddings, vector stores, retrieval</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Fine-tuning fundamentals</div><div class="sub">LoRA, PEFT, dataset curation</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon orange">⚙️</div>
+      <div class="phase-meta">
+        <h3>Phase 3 · AI Agent Development</h3>
+        <p>Agentic frameworks, tool use, orchestration</p>
+      </div>
+      <span class="phase-tag tag-active">In Progress</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">LangChain & LangGraph</div><div class="sub">Chains, agents, memory modules</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Anthropic Claude Code / MCP</div><div class="sub">Tool use, agentic loops, hooks</div></div>
+        <span class="task-pill pill-done">Done</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check half">~</div>
+        <div class="task-text"><div class="name">Multi-agent orchestration</div><div class="sub">AutoGen, CrewAI, supervisor patterns</div></div>
+        <span class="task-pill pill-active">Active</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check half">~</div>
+        <div class="task-text"><div class="name">Agent evaluation & evals</div><div class="sub">LLM-as-judge, benchmarks, tracing</div></div>
+        <span class="task-pill pill-active">Active</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon green">🔗</div>
+      <div class="phase-meta">
+        <h3>Phase 4 · Automation & Integrations</h3>
+        <p>No-code bridges, APIs & event-driven flows</p>
+      </div>
+      <span class="phase-tag tag-active">Active</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check checked">✓</div>
+        <div class="task-text"><div class="name">Node.js v24.14.0</div><div class="sub">Runtime installed — required for n8n, automation tooling</div></div>
+        <span class="task-pill pill-done">Installed</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check half">~</div>
+        <div class="task-text"><div class="name">n8n / Make workflow design</div><div class="sub">Webhooks, triggers, complex flows</div></div>
+        <span class="task-pill pill-active">Active</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check half">~</div>
+        <div class="task-text"><div class="name">REST & GraphQL integrations</div><div class="sub">Auth patterns, rate limiting, retries</div></div>
+        <span class="task-pill pill-active">Active</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Event-driven architecture</div><div class="sub">Kafka / Redis streams, pub-sub</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Robotic Process Automation</div><div class="sub">Playwright-based browser agents</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon red">🚀</div>
+      <div class="phase-meta">
+        <h3>Phase 5 · Production & MLOps</h3>
+        <p>Deployment, monitoring, scalable infra</p>
+      </div>
+      <span class="phase-tag tag-planned">Planned</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Docker & Kubernetes for AI</div><div class="sub">Containerized model serving, K8s jobs</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">CI/CD for ML pipelines</div><div class="sub">GitHub Actions, model versioning</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Observability & tracing</div><div class="sub">LangSmith, Prometheus, Grafana</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Cost optimisation & caching</div><div class="sub">Semantic caching, token budgeting</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase-card">
+    <div class="phase-header">
+      <div class="phase-icon purple">💼</div>
+      <div class="phase-meta">
+        <h3>Phase 6 · Portfolio & Freelance</h3>
+        <p>Real clients, case studies, positioning</p>
+      </div>
+      <span class="phase-tag tag-planned">Planned</span>
+    </div>
+    <div class="task-list">
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">3 end-to-end AI projects</div><div class="sub">Published repos + write-ups</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">Personal brand & content</div><div class="sub">LinkedIn, X/Twitter, technical blog</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">First paid automation client</div><div class="sub">Scoped project, contract, delivery</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+      <div class="task-item">
+        <div class="task-check"></div>
+        <div class="task-text"><div class="name">SaaS micro-product launch</div><div class="sub">AI wrapper or automation tool</div></div>
+        <span class="task-pill pill-planned">Planned</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Timeline ── -->
+<div class="timeline-section">
+  <h2>Timeline Overview</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot done"></div>
+      <div class="tl-label"><strong>Q1 2025</strong>Foundations</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot done"></div>
+      <div class="tl-label"><strong>Q2 2025</strong>LLMs & Prompting</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot active"></div>
+      <div class="tl-label"><strong>Q3 2025</strong>Agents</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot active"></div>
+      <div class="tl-label"><strong>Q4 2025</strong>Automation</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot planned"></div>
+      <div class="tl-label"><strong>Q1 2026</strong>MLOps</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot planned"></div>
+      <div class="tl-label"><strong>Q2 2026</strong>Portfolio</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot planned"></div>
+      <div class="tl-label"><strong>Q3 2026</strong>Freelance</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>Built with Claude Code &nbsp;·&nbsp; AI Automation Engineer Roadmap &nbsp;·&nbsp; <a href="#">github.com/tomislav</a></p>
+</footer>
+
+</body>
+</html>
